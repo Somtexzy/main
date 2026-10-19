@@ -224,6 +224,20 @@ def _make_key_func(config):
     return _key_func
 
 
+def clamp_lineage_limit(value: object, *, default: int = 25, maximum: int = 100) -> int:
+    """Clamp a lineage list ``limit`` to the documented range ``[1, maximum]``.
+
+    Mirrors ``clamp_proof_events_limit`` semantics: non-positive values are
+    rejected with ``ValueError`` and oversized values are clamped to
+    ``maximum``.  Callers translate the ``ValueError`` into the standard
+    ``VALIDATION_ERROR`` envelope.
+    """
+    parsed = int(value)
+    if parsed < 1:
+        raise ValueError("limit must be a positive integer")
+    return min(parsed, maximum)
+
+
 def create_app() -> Flask:
     load_dotenv()
     config = load_config()
@@ -999,9 +1013,13 @@ def create_app() -> Flask:
     def lineage_events():
         limit = request.args.get("limit", "25")
         try:
-            parsed_limit = int(limit)
-        except ValueError:
-            return jsonify({"error": "limit must be an integer"}), 400
+            parsed_limit = clamp_lineage_limit(limit)
+        except (TypeError, ValueError):
+            return error_response(
+                code=VALIDATION_ERROR,
+                message="limit must be a positive integer",
+                status=400,
+            )
         return jsonify({"ok": True, "events": list_lineage_events(parsed_limit)})
 
     @app.get("/api/proofs/by-video/<video_hash>")
@@ -1019,9 +1037,13 @@ def create_app() -> Flask:
     def lineage_by_actor(actor_address: str):
         limit = request.args.get("limit", "25")
         try:
-            parsed_limit = int(limit)
-        except ValueError:
-            return jsonify({"error": "limit must be an integer"}), 400
+            parsed_limit = clamp_lineage_limit(limit)
+        except (TypeError, ValueError):
+            return error_response(
+                code=VALIDATION_ERROR,
+                message="limit must be a positive integer",
+                status=400,
+            )
 
         return jsonify({"ok": True, "events": find_lineage_by_actor(actor_address, parsed_limit)})
 
