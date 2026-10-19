@@ -1,5 +1,8 @@
 name: PR labeler
 
+# NOTE: This workflow is intentionally minimal and does not use the standard
+# error envelope; it is a CI configuration file, not a backend endpoint.
+#
 # Automatically applies change-impact and layer labels to pull requests based
 # on the files they modify, using the path mappings in .github/labeler.yml.
 #
