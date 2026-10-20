@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "fix/issue-672-refactor-backend-use-the-standard-error",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "fix/issue-672-refactor-backend-use-the-standard-error": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "fix/issue-672-refactor-backend-use-the-standard-error",
+    "origin"
+  ]
+}
